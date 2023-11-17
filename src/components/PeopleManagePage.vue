@@ -1,0 +1,75 @@
+<script setup>
+  import {usePeopleStore} from "../store/people.js";
+  import {computed, ref} from "vue";
+
+  const validation = ref([
+      value => !!value || 'Введите имя.',
+      value => {
+        const pattern = /^[А-Я]( ?[а-я])+$/;
+        return pattern.test(value) ||
+            `Имя должно начинаться с заглавной буквы, состоять из кириллических букв и пробелов.
+             Пробелы в начале или конце недопустимы.`
+      }
+  ]);
+
+  const store = usePeopleStore();
+
+  const people = computed(() => store.people);
+
+  function addPerson(name) {
+    store.add(name);
+  }
+  function removePerson(person, idx) {
+    store.remove(person);
+  }
+
+  function onFieldChange() {
+
+  }
+</script>
+
+<template>
+  <v-card border rounded>
+    <v-btn class=""
+           variant="text"
+           color="yellow-darken-3"
+           @click="addPerson('')">
+      Добавить человека
+    </v-btn>
+        <v-list>
+          <v-list-item v-for="person in people" :key="person.key">
+            <template v-slot:prepend>
+              <v-avatar color="yellow-darken-3" class = "text-capitalize">
+                <span class="text-h5 text-capitalize">{{ person.name.charAt(0) }}</span>
+              </v-avatar>
+            </template>
+            <v-text-field
+                color="yellow-darken-3"
+                label="Имя"
+                hint="Введите имя участника"
+                v-model="person.name"
+                :rules="validation"></v-text-field>
+            <template v-slot:append>
+              <v-btn class=""
+                     variant="flat"
+                     color="red-darken-3"
+                     @click="removePerson(person)"
+                     rounded>
+                Удалить
+              </v-btn>
+            </template>
+          </v-list-item>
+        </v-list>
+    <!-- REDO -->
+    <v-btn class=""
+           variant="text"
+           color="yellow-darken-3"
+           @click="console.log(people)">
+      проверка
+    </v-btn>
+  </v-card>
+</template>
+
+<style scoped>
+
+</style>
