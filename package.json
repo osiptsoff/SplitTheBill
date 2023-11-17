@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "animate.css": "^4.1.1",
     "pinia": "^2.1.7",
     "sass": "^1.69.5",
     "vue": "^3.3.4",

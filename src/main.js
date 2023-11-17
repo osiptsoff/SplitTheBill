@@ -3,7 +3,6 @@ import {createApp} from 'vue'
 import {vuetify} from "./vuetify/index.js";
 import {router} from "./router/index.js";
 
-import '/node_modules/animate.css/animate.min.css';
 import App from './App.vue';
 
 const pinia = createPinia()
