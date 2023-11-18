@@ -1,6 +1,7 @@
 <script setup>
   import {usePeopleStore} from "../store/people.js";
   import {computed, ref} from "vue";
+  import {useRouter} from "vue-router";
 
   const validation = ref([
       value => !!value || 'Введите имя.',
@@ -8,24 +9,26 @@
         const pattern = /^[А-Я]( ?[а-я])+$/;
         return pattern.test(value) ||
             `Имя должно начинаться с заглавной буквы, состоять из кириллических букв и пробелов.
-             Пробелы в начале или конце недопустимы.`
+             Пробелы в начале или конце недопустимы.`;
       }
   ]);
   const valid = ref(false);
 
   const store = usePeopleStore();
 
+  const router = useRouter();
+
   const people = computed(() => store.people);
 
   function addPerson(name) {
     store.add(name);
   }
-  function removePerson(person, idx) {
+  function removePerson(person) {
     store.remove(person);
   }
 
   function onSubmit(form) {
-    console.log('done')
+    router.push({ name : 'BillManage' });
   }
 </script>
 
@@ -49,19 +52,17 @@
             </template>
 
             <v-text-field
-                color="yellow-darken-3"
-                label="Имя"
-                hint="Введите имя участника"
-                v-model="person.name"
-                :rules="validation"></v-text-field>
+              color="yellow-darken-3"
+              label="Имя"
+              hint="Введите имя участника"
+              v-model="person.name"
+              :rules="validation"/>
 
             <template v-slot:append>
               <v-btn :block="true"
-                     class=""
-                     variant="flat"
+                     variant="text"
                      color="red-darken-3"
-                     @click="removePerson(person)"
-                     rounded>
+                     @click="removePerson(person)">
                 Удалить
               </v-btn>
             </template>

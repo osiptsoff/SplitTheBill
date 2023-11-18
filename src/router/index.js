@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from "vue-router";
 import PeopleManagePage from "../components/PeopleManagePage.vue";
 import NotFoundPage from "../components/NotFoundPage.vue";
+import BillManagePage from "../components/BillManagePage.vue";
 
 const routes =  [
     {
@@ -12,6 +13,11 @@ const routes =  [
         name: 'PeopleManage',
         path: '/people',
         component: PeopleManagePage,
+    },
+    {
+        name: 'BillManage',
+        path: '/bill',
+        component: BillManagePage,
     },
     {
         name: 'NotFound',
