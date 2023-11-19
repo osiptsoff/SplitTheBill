@@ -13,7 +13,7 @@
   const people = computed( () => peopleStore.people );
   const bill = computed( () => billStore.bill );
 
-  const emptyFieldRule = value => !!value || 'Поле не должно быть пустым.';
+  const emptyFieldRule = value => value != null || 'Поле не должно быть пустым.';
   const priceRule = value => {
     const pattern = /^[1-9][0-9]*$/;
     return pattern.test(value) || 'Введите корректную сумму в цифрах.';
@@ -29,22 +29,28 @@
   function removePosition(position) {
     billStore.remove(position);
   }
+  function deleteParticipant(position, participant) {
+    let idx = position.participants.indexOf(participant);
+
+    if(idx >= 0)
+      position.participants.splice(idx);
+  }
   function onSubmit() {
-    console.log(bill.value)
-   // router.push({ name: 'NotFound' });
+    router.push({ name: 'NotFound' });
   }
 </script>
 
 <template>
-  <v-sheet class="mx-6 my-4" rounded>
+  <v-sheet class="mx-6 my-4"
+           rounded>
     <v-btn :block="true"
            variant="text"
            color="yellow-darken-3"
            @click="addPosition()">
       Добавить позицию
     </v-btn>
-
-    <v-form @submit.prevent="onSubmit">
+    <v-divider></v-divider>
+    <v-form @submit.prevent="onSubmit" v-model="valid">
       <v-list>
         <v-slide-x-transition :group="true">
           <v-list-item v-for="position in bill" :key="position.key">
@@ -70,6 +76,46 @@
                 </v-col>
 
                 <v-col cols="2">
+                  <v-select density="compact"
+                            variant="solo"
+                            label="Кто платит"
+                            :items="people"
+                            :rules="[emptyFieldRule]"
+                            item-title="name"
+                            item-value="key"
+                            v-model="position.customer"
+                            @update:model-value="deleteParticipant(position, $event)">
+                  </v-select>
+                </v-col>
+              </v-row>
+
+              <v-row justify="center">
+                <v-col cols="10">
+                  <v-slide-group :multiple="true"
+                                 v-model="position.participants"
+                                 show-arrows>
+                    <v-slide-group-item v-for="person in people"
+                                        :key="person.key"
+                                        v-slot="{ isSelected, toggle }">
+
+                      <v-card @click="toggle" class="mx-5 my-2" v-if="person.key !== position.customer">
+                        <v-avatar :color="isSelected ? 'green-darken-3' :'yellow-darken-3'"
+                                  class="text-capitalize">
+                        <span class="text-h5 text-capitalize">
+                          {{ person.name.charAt(0) }}
+                        </span>
+                        </v-avatar>
+                        {{ person.name }}
+                      </v-card>
+                    </v-slide-group-item>
+                  </v-slide-group>
+
+                </v-col>
+
+              </v-row>
+
+              <v-row justify="center">
+                <v-col cols="2">
                   <v-btn variant="tonal"  :block="true"
                          color="red-darken-3"
                          @click="removePosition(position)">
@@ -77,49 +123,12 @@
                   </v-btn>
                 </v-col>
               </v-row>
-
-              <v-row>
-                <v-col>
-                  <v-slide-group :multiple="true"
-                                 v-model="position.participants"
-                                 show-arrows>
-
-                    <v-slide-group-item v-for="person in people"
-                                        :key="person.key"
-                                        v-slot="{ isSelected, toggle }">
-
-                      <v-card @click="toggle" class="mx-5 my-2" v-if=" position.customer && person !== position.customer">
-                        <v-avatar :color="isSelected ? 'green-darken-3' :'yellow-darken-3'"
-                                  class="text-capitalize">
-                          <span class="text-h5 text-capitalize">
-                            {{ person.name.charAt(0) }}
-                          </span>
-                        </v-avatar>
-
-                        {{ person.name }}
-                      </v-card>
-                    </v-slide-group-item>
-                  </v-slide-group>
-                </v-col>
-
-                <v-col cols="2">
-                  <v-select density="compact"
-                            variant="solo"
-                            label="Кто платит"
-                            :items="people"
-                            item-title="name"
-                            item-value="key"
-                            v-model="position.customer"
-                            return-object>
-                  </v-select>
-                </v-col>
-              </v-row>
             <v-divider/>
           </v-list-item>
         </v-slide-x-transition>
       </v-list>
 
-      <v-btn
+      <v-btn :disabled="!valid || !bill.length"
              :block="true"
              type="submit"
              variant="text"

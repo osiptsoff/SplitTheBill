@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import {createRouter, createMemoryHistory} from "vue-router";
 import PeopleManagePage from "../components/PeopleManagePage.vue";
 import NotFoundPage from "../components/NotFoundPage.vue";
 import BillManagePage from "../components/BillManagePage.vue";
@@ -27,7 +27,7 @@ const routes =  [
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createMemoryHistory(),
     routes
 });
 

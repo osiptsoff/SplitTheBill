@@ -27,19 +27,21 @@
     store.remove(person);
   }
 
-  function onSubmit(form) {
+  function onSubmit() {
     router.push({ name : 'BillManage' });
   }
 </script>
 
 <template>
-  <v-card border rounded>
+  <v-sheet class="mx-6 my-4"
+           rounded>
     <v-btn :block="true"
            variant="text"
            color="yellow-darken-3"
            @click="addPerson('')">
       Добавить человека
     </v-btn>
+    <v-divider></v-divider>
 
     <v-form @submit.prevent="onSubmit" v-model="valid">
       <v-list>
@@ -78,7 +80,7 @@
         Далее
       </v-btn>
     </v-form>
-  </v-card>
+  </v-sheet>
 </template>
 
 <style scoped>

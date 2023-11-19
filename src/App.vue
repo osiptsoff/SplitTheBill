@@ -1,6 +1,6 @@
 <script setup>
 </script>
-<!--style="text-align: center"-->
+
 <template>
   <v-app>
     <v-app-bar>
