@@ -36,7 +36,7 @@
       position.participants.splice(idx);
   }
   function onSubmit() {
-    router.push({ name: 'NotFound' });
+    router.push({ name: 'Count' });
   }
 </script>
 
@@ -99,13 +99,15 @@
                                         v-slot="{ isSelected, toggle }">
 
                       <v-card @click="toggle" class="mx-5 my-2" v-if="person.key !== position.customer">
-                        <v-avatar :color="isSelected ? 'green-darken-3' :'yellow-darken-3'"
-                                  class="text-capitalize">
-                        <span class="text-h5 text-capitalize">
-                          {{ person.name.charAt(0) }}
-                        </span>
-                        </v-avatar>
-                        {{ person.name }}
+                        <v-card-text>
+                          <v-avatar :color="isSelected ? 'green-darken-3' :'yellow-darken-3'"
+                                    class="text-capitalize">
+                            <span class="text-h5 text-capitalize">
+                              {{ person.name.charAt(0) }}
+                            </span>
+                          </v-avatar>
+                          {{ person.name }}
+                        </v-card-text>
                       </v-card>
                     </v-slide-group-item>
                   </v-slide-group>
@@ -116,7 +118,7 @@
 
               <v-row justify="center">
                 <v-col cols="2">
-                  <v-btn variant="tonal"  :block="true"
+                  <v-btn variant="text"  :block="true"
                          color="red-darken-3"
                          @click="removePosition(position)">
                     Удалить
