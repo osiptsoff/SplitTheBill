@@ -17,6 +17,28 @@
   }
 
   //TODO : move into store
+  function doBalancing() {
+    for(let personKey in billSplit.value) {
+      let person = billSplit.value[personKey]
+
+      for(let debtor in person.debtors) {
+        if(person.borrowers[debtor] === undefined)
+          continue;
+
+        if(person.debtors[debtor].debt > person.borrowers[debtor].borrow) {
+          person.debtors[debtor].debt -= person.borrowers[debtor].borrow;
+          delete person.borrowers[debtor];
+        } else if(person.debtors[debtor].debt < person.borrowers[debtor].borrow) {
+          person.borrowers[debtor].borrow -= person.debtors[debtor].debt;
+          delete person.debtors[debtor];
+        } else {
+          delete person.borrowers[debtor];
+          delete person.debtors[debtor];
+        }
+      }
+    }
+  }
+
   onMounted(() => {
     for(let position of billStore.bill) {
       let customer = billSplit.value[position.customer];
@@ -33,11 +55,11 @@
 
       customer.paid += +position.price;
 
-      for(let debtor in position.participants) {
+      for(let debtor of position.participants) {
         if(customer.debtors[debtor] === undefined)
           customer.debtors[debtor] = { debt : 0 };
 
-        customer.debtors[debtor] += +separatePrice;
+        customer.debtors[debtor].debt += +separatePrice;
 
         if(billSplit.value[debtor] === undefined)
           billSplit.value[debtor] = {
@@ -52,6 +74,7 @@
         billSplit.value[debtor].borrowers[position.customer].borrow += +separatePrice;
       }
     }
+    doBalancing();
   });
 </script>
 
