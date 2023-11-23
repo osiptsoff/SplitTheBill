@@ -49,7 +49,8 @@
            @click="addPosition()">
       Добавить позицию
     </v-btn>
-    <v-divider></v-divider>
+    <v-divider/>
+
     <v-form @submit.prevent="onSubmit" v-model="valid">
       <v-list>
         <v-slide-x-transition :group="true">
@@ -80,9 +81,9 @@
                             variant="solo"
                             label="Кто платит"
                             :items="people"
-                            :rules="[emptyFieldRule]"
                             item-title="name"
                             item-value="key"
+                            :rules="[emptyFieldRule]"
                             v-model="position.customer"
                             @update:model-value="deleteParticipant(position, $event)">
                   </v-select>

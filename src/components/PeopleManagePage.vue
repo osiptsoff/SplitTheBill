@@ -41,7 +41,7 @@
            @click="addPerson('')">
       Добавить человека
     </v-btn>
-    <v-divider></v-divider>
+    <v-divider/>
 
     <v-form @submit.prevent="onSubmit" v-model="valid">
       <v-list>
@@ -49,7 +49,9 @@
           <v-list-item v-for="person in people" :key="person.key">
             <template v-slot:prepend>
               <v-avatar color="yellow-darken-3" class="text-capitalize">
-                <span class="text-h5 text-capitalize">{{ person.name.charAt(0) }}</span>
+                <span class="text-h5 text-capitalize">
+                  {{ person.name.charAt(0) }}
+                </span>
               </v-avatar>
             </template>
 
@@ -58,7 +60,8 @@
               label="Имя"
               hint="Введите имя участника"
               v-model="person.name"
-              :rules="validation"/>
+              :rules="validation">
+            </v-text-field>
 
             <template v-slot:append>
               <v-btn :block="true"

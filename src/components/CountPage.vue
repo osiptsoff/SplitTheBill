@@ -1,7 +1,7 @@
 <script setup>
   import {usePeopleStore} from "../store/people.js";
   import {useBillStore} from "../store/bill.js";
-  import {computed, onBeforeMount, onMounted, ref} from "vue";
+  import {computed, onMounted, ref} from "vue";
 
   const peopleStore = usePeopleStore();
   const billStore = useBillStore();
@@ -9,72 +9,15 @@
   const billSplit = ref({});
 
   const totalSum = computed(
-      () => Object.values(billSplit.value).reduce( (acc, cur) => acc += cur.paid, 0 )
+      () => Object.values(billSplit.value).reduce( (acc, cur) => acc + cur.paid, 0 )
   );
 
   function personName(id) {
     return peopleStore.person(id).name;
   }
 
-  //TODO : move into store
-  function doBalancing() {
-    for(let personKey in billSplit.value) {
-      let person = billSplit.value[personKey]
-
-      for(let debtor in person.debtors) {
-        if(person.borrowers[debtor] === undefined)
-          continue;
-
-        if(person.debtors[debtor].debt > person.borrowers[debtor].borrow) {
-          person.debtors[debtor].debt -= person.borrowers[debtor].borrow;
-          delete person.borrowers[debtor];
-        } else if(person.debtors[debtor].debt < person.borrowers[debtor].borrow) {
-          person.borrowers[debtor].borrow -= person.debtors[debtor].debt;
-          delete person.debtors[debtor];
-        } else {
-          delete person.borrowers[debtor];
-          delete person.debtors[debtor];
-        }
-      }
-    }
-  }
-
   onMounted(() => {
-    for(let position of billStore.bill) {
-      let customer = billSplit.value[position.customer];
-      let separatePrice = position.price / (position.participants.length + 1);
-
-      if(customer === undefined) {
-        customer = {
-          paid: 0,
-          debtors: {},
-          borrowers: {},
-        };
-        billSplit.value[position.customer] = customer;
-      }
-
-      customer.paid += +position.price;
-
-      for(let debtor of position.participants) {
-        if(customer.debtors[debtor] === undefined)
-          customer.debtors[debtor] = { debt : 0 };
-
-        customer.debtors[debtor].debt += +separatePrice;
-
-        if(billSplit.value[debtor] === undefined)
-          billSplit.value[debtor] = {
-            paid: 0,
-            debtors: {},
-            borrowers: {},
-          };
-
-        if(billSplit.value[debtor].borrowers[position.customer] === undefined)
-          billSplit.value[debtor].borrowers[position.customer] = { borrow : 0 };
-
-        billSplit.value[debtor].borrowers[position.customer].borrow += +separatePrice;
-      }
-    }
-    doBalancing();
+    billSplit.value = billStore.split();
   });
 </script>
 
