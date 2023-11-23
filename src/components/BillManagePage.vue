@@ -8,10 +8,16 @@
   const billStore = useBillStore();
   const router = useRouter();
 
-  const valid = ref(false);
+  const fieldsValid = ref(false);
 
   const people = computed( () => peopleStore.people );
   const bill = computed( () => billStore.bill );
+  const formValid = computed( () => {
+    if( !(fieldsValid.value && bill.value.length > 0) )
+      return false;
+
+    return bill.value.reduce( (acc, cur) => acc & cur.participants.length > 0, true );
+  } );
 
   const emptyFieldRule = value => value != null || 'Поле не должно быть пустым.';
   const priceRule = value => {
@@ -29,12 +35,6 @@
   function removePosition(position) {
     billStore.remove(position);
   }
-  function deleteParticipant(position, participant) {
-    let idx = position.participants.indexOf(participant);
-
-    if(idx >= 0)
-      position.participants.splice(idx);
-  }
   function onSubmit() {
     router.push({ name: 'Count' });
   }
@@ -51,7 +51,7 @@
     </v-btn>
     <v-divider/>
 
-    <v-form @submit.prevent="onSubmit" v-model="valid">
+    <v-form @submit.prevent="onSubmit" v-model="fieldsValid">
       <v-list>
         <v-slide-x-transition :group="true">
           <v-list-item v-for="position in bill" :key="position.key">
@@ -84,8 +84,7 @@
                             item-title="name"
                             item-value="key"
                             :rules="[emptyFieldRule]"
-                            v-model="position.customer"
-                            @update:model-value="deleteParticipant(position, $event)">
+                            v-model="position.customer">
                   </v-select>
                 </v-col>
               </v-row>
@@ -99,7 +98,7 @@
                                         :key="person.key"
                                         v-slot="{ isSelected, toggle }">
 
-                      <v-card @click="toggle" class="mx-5 my-2" v-if="person.key !== position.customer">
+                      <v-card @click="toggle" class="mx-5 my-2">
                         <v-card-text>
                           <v-avatar :color="isSelected ? 'green-darken-3' :'yellow-darken-3'"
                                     class="text-capitalize">
@@ -131,7 +130,7 @@
         </v-slide-x-transition>
       </v-list>
 
-      <v-btn :disabled="!valid || !bill.length"
+      <v-btn :disabled="!formValid"
              :block="true"
              type="submit"
              variant="text"

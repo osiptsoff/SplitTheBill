@@ -51,7 +51,7 @@ const useBillStore = defineStore('bill', () => {
 
         for(let position of bill.value) {
             let customer = billSplit[position.customer];
-            let separatePrice = position.price / (position.participants.length + 1);
+            let separatePrice = position.price / position.participants.length;
 
             if(customer === undefined) {
                 customer = {
@@ -62,25 +62,25 @@ const useBillStore = defineStore('bill', () => {
                 billSplit[position.customer] = customer;
             }
 
-            customer.paid += +position.price;
+            for(let participant of position.participants) {
+                billSplit[position.customer].paid += separatePrice;
 
-            for(let debtor of position.participants) {
-                if(customer.debtors[debtor] === undefined)
-                    customer.debtors[debtor] = { debt : 0 };
+                if(customer.debtors[participant] === undefined)
+                    customer.debtors[participant] = { debt : 0 };
 
-                customer.debtors[debtor].debt += +separatePrice;
+                customer.debtors[participant].debt += +separatePrice;
 
-                if(billSplit[debtor] === undefined)
-                    billSplit[debtor] = {
+                if(billSplit[participant] === undefined)
+                    billSplit[participant] = {
                         paid: 0,
                         debtors: {},
                         borrowers: {},
                     };
 
-                if(billSplit[debtor].borrowers[position.customer] === undefined)
-                    billSplit[debtor].borrowers[position.customer] = { borrow : 0 };
+                if(billSplit[participant].borrowers[position.customer] === undefined)
+                    billSplit[participant].borrowers[position.customer] = { borrow : 0 };
 
-                billSplit[debtor].borrowers[position.customer].borrow += +separatePrice;
+                billSplit[participant].borrowers[position.customer].borrow += +separatePrice;
             }
         }
 
